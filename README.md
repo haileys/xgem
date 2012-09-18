@@ -4,7 +4,7 @@ xgem is a fast and simple supplement to RubyGems. You will notice a significant 
 
 Here's a demo with Rails: (I've used the full path to the executable because xgem does not *yet* make this easy for you. This feature is coming soon though)
 
-![](http://i.imgur.com/W4dlL.png)
+![](http://i.imgur.com/dzylX.png)
 
 How awesome is that? Read on for more details...
 
