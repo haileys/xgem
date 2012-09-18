@@ -28,6 +28,15 @@ puts Yajl::VERSION
 
 When run normally with RubyGems' `require`, this script takes about 280ms to run on my machine. When run with `xgem-ruby`, that time drops down to just 70ms.
 
+### Installation
+
+So you've decided you want to give xgem a shot? Cool!
+
+    gem install xgem
+    xgem install
+
+The second `xgem install` command is required to overcome some limitations in RubyGems. For performance reasons, xgem will overwrite the executable wrapper RubyGems creates with its own custom shell script. `xgem install` will also do an initial cache refresh for you. Rest assured that nothing `xgem install` does can't be undone by uninstalling xgem through RubyGems.
+
 ### Caveats
 
 RubyGems does a lot under the covers. One thing it does is managing multiple installed versions of the same gem. xgem doesn't currently do this.
