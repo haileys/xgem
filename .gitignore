@@ -1,0 +1,4 @@
+tmp
+data/executables
+data/require_paths
+*.gem
