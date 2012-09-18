@@ -4,6 +4,7 @@ xgem_root = File.expand_path("#{File.expand_path(__FILE__)}/../..")
 
 commands = {
   "refresh" => -> {
+    require "rubygems"
     require "fileutils"
     
     puts "Refreshing xgem cache..."
@@ -11,6 +12,7 @@ commands = {
     current = 0
     suffixes = Gem.suffixes.map { |s| Regexp.new("#{Regexp.escape s}\\z") }
     require_map = {}
+    executables = {}
     
     print "0/#{total}"
     
@@ -27,35 +29,65 @@ commands = {
           end
         end
       end
+      spec.executables.each do |executable|
+        if File.file? "#{spec.bin_dir}/#{executable}"
+          executables[executable] = "#{spec.bin_dir}/#{executable}"
+        end
+      end
       print "\r#{current += 1}/#{total}"
     end
     
     File.write "#{xgem_root}/data/require_paths", Marshal.dump(require_map)
+    File.write "#{xgem_root}/data/executables", Marshal.dump(executables)
     puts "\rReady to rock and roll!"
   },
   
   "install" => -> {
     print "Installing xgem-ruby executable... "
     
-    File.write "#{$0}-ruby", <<-XGEM_RUBY.gsub(/^      /,"")
+    # overwrite RubyGem's wrapper with a shell script
+    wrapper_script = <<-XGEMRUBY.gsub(/^      /,"")
       #!/bin/bash
 
       xgem_root="#{__FILE__.inspect[1...-1]}/../.."
 
       ruby --disable-gems -I "$xgem_root/lib" -r xgem $@
-    XGEM_RUBY
+    XGEMRUBY
+    File.write "#{$0}-ruby", wrapper_script
+    File.write "#{File.expand_path __FILE__}-ruby", wrapper_script
+    
+    puts "ok!"
+    
+    print "Making 'xgem' use 'xgem-ruby'... "
+    
+    File.write "#{$0}", <<-XGEM.gsub(/^      /,"")
+      #!/bin/bash
+      
+      ruby --disable-gems #{File.expand_path(__FILE__).inspect} $@
+    XGEM
     
     puts "ok!"
     
     commands["refresh"].call
+  },
+  
+  "do" => ->(executable, *args) {
+    executables = Marshal.load File.open("#{xgem_root}/data/executables", "rb") { |f| f.read }
+    if executables[executable]
+      exec "#{$0}-ruby", executables[executable], *args
+    else
+      puts "Unknown executable '#{executable}'. Perhaps try running 'xgem refresh'?"
+      exit 1
+    end
   }
 }
 
-if commands[ARGV.first]
-  commands[ARGV.first].call
+cmd, *cmd_args = ARGV
+if commands[cmd] and commands[cmd].parameters.take_while { |x,_| x == :req }.count <= cmd_args.count
+  commands[cmd].call *cmd_args
 else
   puts <<-USAGE.gsub(/^  /,"")
-  Usage: xgem <command>
+  Usage: xgem <command> [<args>...]
   
   Available commands are:
   
@@ -67,6 +99,9 @@ else
                 order to use the 'xgem-ruby' command. Note that this will not
                 modify your system in any way that isn't undoable by running
                 'gem uninstall xgem'.
+    
+    do        - Runs an executable provided by a gem. For example
+                'xgem do rails server'
   
   USAGE
 end
