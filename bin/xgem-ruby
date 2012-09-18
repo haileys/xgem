@@ -1,0 +1,3 @@
+#!/usr/bin/env
+
+puts "Please run 'xgem install' and try again."

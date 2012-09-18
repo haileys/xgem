@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+xgem_root = File.expand_path("#{File.expand_path(__FILE__)}/../..")
+
+commands = {
+  "refresh" => -> {
+    require "fileutils"
+    
+    puts "Refreshing xgem cache..."
+    total = Gem::Specification.count
+    current = 0
+    suffixes = Gem.suffixes.map { |s| Regexp.new("#{Regexp.escape s}\\z") }
+    require_map = {}
+    
+    print "0/#{total}"
+    
+    Gem::Specification.each do |spec|
+      spec.require_paths.each do |require_path|
+        root = "#{spec.full_gem_path}/#{require_path}/"
+        Dir["#{root}**/*"].each do |file|
+          if File.file? file
+            suffixes.each do |suffix|
+              if file =~ suffix
+                require_map[file[root.size..-1].gsub(suffix, "")] = file.gsub(suffix, "")
+              end
+            end
+          end
+        end
+      end
+      print "\r#{current += 1}/#{total}"
+    end
+    
+    File.write "#{xgem_root}/data/require_paths", Marshal.dump(require_map)
+    puts "\rReady to rock and roll!"
+  },
+  
+  "install" => -> {
+    print "Installing xgem-ruby executable... "
+    
+    File.write "#{$0}-ruby", <<-XGEM_RUBY.gsub(/^      /,"")
+      #!/bin/bash
+
+      xgem_root="#{__FILE__.inspect[1...-1]}/../.."
+
+      ruby --disable-gems -I "$xgem_root/lib" -r xgem $@
+    XGEM_RUBY
+    
+    puts "ok!"
+    
+    commands["refresh"].call
+  }
+}
+
+if commands[ARGV.first]
+  commands[ARGV.first].call
+else
+  puts <<-USAGE.gsub(/^  /,"")
+  Usage: xgem <command>
+  
+  Available commands are:
+  
+    refresh   - Scans all installed gems and adds them to the require path
+                cache. You will need to run 'xgem refresh' every time you 
+                install or uninstall a gem.
+              
+    install   - You must run 'xgem install' when you first install xgem in
+                order to use the 'xgem-ruby' command. Note that this will not
+                modify your system in any way that isn't undoable by running
+                'gem uninstall xgem'.
+  
+  USAGE
+end
