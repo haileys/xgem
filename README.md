@@ -2,6 +2,12 @@
 
 xgem is a fast and simple supplement to RubyGems. You will notice a significant drop in the amount of time it takes Ruby to startup.
 
+Here's a demo with Rails: (I've used the full path to the executable because xgem does not *yet* make this easy for you. This feature is coming soon though)
+
+![](http://i.imgur.com/W4dlL.png)
+
+How awesome is that? Read on for more details...
+
 ### The Problem with RubyGems
 
 RubyGems is a good bit of software. It does a lot of things and usually serves its users well. Unfortunately, RubyGems imposes a nasty peformance penalty with regard to startup times.
@@ -20,9 +26,7 @@ require "yajl/version"
 puts Yajl::VERSION
 ```
 
-When run with `xgem-ruby`, the time it takes for this script to run drops by more than 200 milliseconds:
-
-![image](http://i.imgur.com/yqnXs.png)
+When run normally with RubyGems' `require`, this script takes about 280ms to run on my machine. When run with `xgem-ruby`, that time drops down to just 70ms.
 
 ### Caveats
 
