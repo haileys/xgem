@@ -4,6 +4,6 @@ Gem::Specification.new do |s|
   s.authors     = "Charlie Somerville"
   s.files       = ["bin/xgem", "bin/xgem-ruby", "lib/xgem.rb", "data/.keep"]
   s.executables = ["xgem", "xgem-ruby"]
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.homepage    = "https://github.com/charliesome/xgem"
 end
