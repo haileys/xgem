@@ -2,7 +2,7 @@
 
 xgem is a fast and simple supplement to RubyGems. You will notice a significant drop in the amount of time it takes Ruby to startup.
 
-Here's a demo with Rails: (I've used the full path to the executable because xgem does not *yet* make this easy for you. This feature is coming soon though)
+Here's a demo with Rails:
 
 ![](http://i.imgur.com/nd9JG.png)
 
