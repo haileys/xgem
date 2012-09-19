@@ -32,6 +32,8 @@ When run normally with RubyGems' `require`, this script takes about 280ms to run
 
 So you've decided you want to give xgem a shot? Cool!
 
+xgem requires Ruby 1.9.2 or greater. If you're still on 1.8, you should probably consider upgrading. Otherwise, open a Terminal window and run these commands:
+
     gem install xgem
     xgem install
 

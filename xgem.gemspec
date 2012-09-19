@@ -6,4 +6,6 @@ Gem::Specification.new do |s|
   s.executables = ["xgem", "xgem-ruby"]
   s.version     = "0.0.2"
   s.homepage    = "https://github.com/charliesome/xgem"
+  
+  s.required_ruby_version = "=> 1.9.2"
 end
